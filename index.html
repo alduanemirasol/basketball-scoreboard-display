@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Basketball Scoreboard</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="scoreboard">
+
+        <!-- Home team section -->
+        <div class="team home">
+            <div class="label">HOME</div> <!-- Team label -->
+            <div class="score" id="homeScore">0</div> <!-- Home team score -->
+            <div class="fouls">FOULS <span id="homeFouls">0</span></div> <!-- Home team fouls -->
+        </div>
+
+        <!-- Center scoreboard info -->
+        <div class="center">
+            <div class="period">
+                PERIOD <span id="period">1</span>/<span id="maxPeriod">4</span> <!-- Current period / total periods -->
+            </div>
+
+            <div class="clock" id="gameClock">12:00</div> <!-- Game clock -->
+
+            <div class="shot-clock">
+                SHOT <span id="shotClock">24</span> <!-- Shot clock -->
+            </div>
+
+            <div class="status" id="status">PAUSED</div> <!-- Game status -->
+        </div>
+
+        <!-- Away team section -->
+        <div class="team away">
+            <div class="label">AWAY</div> <!-- Team label -->
+            <div class="score" id="awayScore">0</div> <!-- Away team score -->
+            <div class="fouls">FOULS <span id="awayFouls">0</span></div> <!-- Away team fouls -->
+        </div>
+
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>

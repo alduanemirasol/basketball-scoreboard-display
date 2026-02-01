@@ -1,0 +1,106 @@
+:root {
+  --bg: #0a0a0a; /* Background color */
+  --panel: #121212; /* Panel color */
+  --text: #ffffff; /* Text color */
+  --accent: #e4ba01; /* Accent color */
+  --danger: #ff3b3b; /* Alert color */
+}
+
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif; /* Default font */
+}
+
+/* Center scoreboard */
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Layout for teams and center panel */
+.scoreboard {
+  width: 100%;
+  max-width: 1400px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 16px;
+}
+
+/* Panels style */
+.team,
+.center {
+  background: var(--panel);
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* Team label */
+.label {
+  font-size: 24px;
+  opacity: 0.7;
+}
+
+/* Score display */
+.score {
+  font-size: 120px;
+  font-weight: 700;
+  margin: 16px 0;
+}
+
+/* Fouls display */
+.fouls {
+  font-size: 20px;
+}
+
+/* Center info layout */
+.center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* Current period */
+.period {
+  font-size: 24px;
+}
+
+/* Game clock */
+.clock {
+  font-size: 96px;
+  font-weight: 700;
+}
+
+/* Shot clock */
+.shot-clock {
+  font-size: 40px;
+  color: var(--accent);
+}
+
+/* Game status */
+.status {
+  font-size: 18px;
+  opacity: 0.6;
+  letter-spacing: 2px;
+}
+
+/* Home possession */
+.possession-home .home {
+  outline: 4px solid var(--accent);
+}
+
+/* Away possession */
+.possession-away .away {
+  outline: 4px solid var(--accent);
+}
+
+/* Highlight clock when paused */
+.paused .clock {
+  color: var(--danger);
+}
