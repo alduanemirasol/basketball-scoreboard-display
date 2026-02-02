@@ -98,11 +98,17 @@ function updateFouls(homeFouls, awayFouls) {
   const awayFoulsContainer = elements.awayFouls.closest(".stat-item");
 
   // Home team fouls
-  homeFoulsContainer.classList.toggle("high-fouls", homeFouls >= 4 && homeFouls < 6);
+  homeFoulsContainer.classList.toggle(
+    "high-fouls",
+    homeFouls >= 4 && homeFouls < 6,
+  );
   homeFoulsContainer.classList.toggle("danger-fouls", homeFouls >= 6);
 
   // Away team fouls
-  awayFoulsContainer.classList.toggle("high-fouls", awayFouls >= 4 && awayFouls < 6);
+  awayFoulsContainer.classList.toggle(
+    "high-fouls",
+    awayFouls >= 4 && awayFouls < 6,
+  );
   awayFoulsContainer.classList.toggle("danger-fouls", awayFouls >= 6);
 }
 
@@ -111,7 +117,7 @@ function updateFouls(homeFouls, awayFouls) {
  */
 function updateShotClock(shotClock) {
   const shotClockContainer = document.querySelector(".shot-clock-container");
-  
+
   if (!shotClockContainer) return;
 
   // Remove all warning classes
@@ -157,7 +163,7 @@ const scoreboardRef = ref(db, "scoreboard");
 
 onValue(scoreboardRef, (snapshot) => {
   const data = snapshot.val();
-  
+
   if (!data) {
     console.warn("No scoreboard data available");
     return;
@@ -210,7 +216,7 @@ function toggleTheme() {
   const newTheme = currentTheme === "dark" ? "light" : "dark";
 
   document.body.className = `theme-${newTheme}`;
-  
+
   // Preserve game state classes
   if (previousData.status === "running") {
     document.body.classList.add("running");
