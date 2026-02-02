@@ -1,4 +1,4 @@
-import { db } from "./firebaseConfig.js"; // Import the Firebase database instance
+import { db } from "./firebase.js"; // Import the Firebase database instance
 import {
   ref,
   onValue,
