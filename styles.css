@@ -172,7 +172,7 @@ body::before {
 
 .scoreboard {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 24px;
   width: 100%;
   animation: fadeInUp 0.8s ease-out;
@@ -282,7 +282,7 @@ body::before {
 /* Team Labels */
 .team-label {
   font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(20px, 3vw, 28px);
+  font-size: clamp(28px, 4vw, 40px);
   letter-spacing: 4px;
   color: var(--text-secondary);
   margin-bottom: 16px;
@@ -292,7 +292,7 @@ body::before {
 /* Score Display */
 .score-display {
   font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(80px, 12vw, 140px);
+  font-size: clamp(100px, 15vw, 180px);
   line-height: 1;
   text-align: center;
   font-weight: 400;
@@ -337,7 +337,7 @@ body::before {
 }
 
 .stat-label {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: 1.5px;
   color: var(--text-muted);
@@ -346,7 +346,7 @@ body::before {
 
 .stat-value {
   font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(28px, 4vw, 36px);
+  font-size: clamp(36px, 5vw, 48px);
   color: var(--text-primary);
   font-weight: 400;
   letter-spacing: 1px;
@@ -428,7 +428,7 @@ body::before {
 }
 
 .period-label {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 2px;
   color: var(--text-muted);
@@ -437,7 +437,7 @@ body::before {
 
 .period-value {
   font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(28px, 4vw, 36px);
+  font-size: clamp(40px, 5vw, 52px);
   color: var(--text-primary);
   font-weight: 400;
   letter-spacing: 1px;
@@ -451,7 +451,7 @@ body::before {
 /* Clock Display */
 .clock-display {
   font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(72px, 10vw, 120px);
+  font-size: clamp(96px, 13vw, 160px);
   line-height: 1;
   text-align: center;
   color: var(--text-primary);
@@ -505,7 +505,7 @@ body.running .clock-display {
 }
 
 .shot-label {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: 1.5px;
   color: var(--text-secondary);
@@ -514,11 +514,11 @@ body.running .clock-display {
 
 .shot-value {
   font-family: "Bebas Neue", sans-serif;
-  font-size: clamp(32px, 5vw, 48px);
+  font-size: clamp(44px, 6vw, 60px);
   color: var(--accent-primary);
   font-weight: 400;
   letter-spacing: 1px;
-  min-width: 60px;
+  min-width: 70px;
   text-align: center;
 }
 
@@ -554,12 +554,12 @@ body.running .clock-display {
 
 /* Status Display */
 .status-display {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: 3px;
   color: var(--text-muted);
   text-transform: uppercase;
-  padding: 8px 20px;
+  padding: 10px 24px;
   border-radius: 20px;
   background: var(--bg-tertiary);
   transition: all 0.3s ease;
@@ -619,7 +619,7 @@ body.running .live-indicator {
 }
 
 .live-text {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 2px;
   color: var(--color-live);
@@ -722,13 +722,14 @@ body.running .live-indicator {
   }
 
   .team-label {
-    font-size: 18px;
+    font-size: 24px;
     letter-spacing: 3px;
     margin-bottom: 12px;
   }
 
   .score-display {
     margin: 16px 0;
+    font-size: clamp(80px, 20vw, 120px);
   }
 
   .team-stats {
@@ -737,7 +738,11 @@ body.running .live-indicator {
   }
 
   .stat-label {
-    font-size: 11px;
+    font-size: 14px;
+  }
+
+  .stat-value {
+    font-size: clamp(32px, 8vw, 40px);
   }
 
   .center-section {
@@ -748,18 +753,35 @@ body.running .live-indicator {
     margin-bottom: 16px;
   }
 
+  .period-label {
+    font-size: 16px;
+  }
+
+  .period-value {
+    font-size: clamp(32px, 8vw, 44px);
+  }
+
   .clock-display {
     margin: 24px 0;
+    font-size: clamp(72px, 18vw, 120px);
   }
 
   .shot-clock-container {
     padding: 10px 20px;
   }
 
+  .shot-label {
+    font-size: 15px;
+  }
+
+  .shot-value {
+    font-size: clamp(36px, 10vw, 48px);
+  }
+
   .status-display {
-    font-size: 13px;
+    font-size: 15px;
     letter-spacing: 2px;
-    padding: 6px 16px;
+    padding: 8px 18px;
   }
 }
 

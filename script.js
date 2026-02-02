@@ -206,7 +206,10 @@ onValue(scoreboardRef, (snapshot) => {
 function initTheme() {
   // Check for saved theme preference or default to dark
   const savedTheme = localStorage.getItem("scoreboard-theme") || "dark";
-  document.body.className = `theme-${savedTheme}`;
+  // Remove any existing theme classes
+  document.body.classList.remove("theme-dark", "theme-light");
+  // Add the correct theme class
+  document.body.classList.add(`theme-${savedTheme}`);
 }
 
 function toggleTheme() {
@@ -215,14 +218,11 @@ function toggleTheme() {
     : "light";
   const newTheme = currentTheme === "dark" ? "light" : "dark";
 
-  document.body.className = `theme-${newTheme}`;
+  // Remove old theme and add new theme
+  document.body.classList.remove("theme-dark", "theme-light");
+  document.body.classList.add(`theme-${newTheme}`);
 
-  // Preserve game state classes
-  if (previousData.status === "running") {
-    document.body.classList.add("running");
-  } else {
-    document.body.classList.add("paused");
-  }
+  // Game state classes (running/paused) are already on body, no need to re-add
 
   localStorage.setItem("scoreboard-theme", newTheme);
 
