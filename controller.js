@@ -162,7 +162,9 @@ function changeFouls(team, delta) {
 
 // Period
 function changePeriod(delta) {
-  push({ period: Math.max(1, state.period + delta) });
+  const newPeriod = state.period + delta;
+  if (newPeriod < 1 || newPeriod > state.maxPeriod) return;
+  push({ period: newPeriod });
 }
 
 // Possession

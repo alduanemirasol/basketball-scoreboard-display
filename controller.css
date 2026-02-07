@@ -1,4 +1,4 @@
-/* Controller styles */
+/* Controller styles - responsive and large */
 
 * {
   box-sizing: border-box;
@@ -16,7 +16,7 @@ body {
 
 header {
   background: #1a1a1f;
-  padding: 16px 20px;
+  padding: 20px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,97 +24,103 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
+  gap: 20px;
 }
 
 header h1 {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
   letter-spacing: 1px;
 }
 
 .status-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 20px;
 }
 
 .clock-label {
-  font-size: 12px;
+  font-size: 14px;
   color: #6e6e7e;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .clock-value {
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  min-width: 50px;
+  min-width: 70px;
   text-align: center;
+  font-family: "Bebas Neue", sans-serif;
+  letter-spacing: 2px;
 }
 
 .status-badge {
   background: #252530;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
 }
 
 main {
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 /* Panels */
 
 .panel {
   background: #1a1a1f;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 24px;
   border: 1px solid #252530;
 }
 
 .panel h2 {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: #6e6e7e;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 12px;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
 }
 
 /* Buttons */
 
 .btn-row {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .btn {
   background: #252530;
   color: #fff;
-  border: 1px solid #3a3a4a;
-  border-radius: 8px;
-  padding: 10px 18px;
+  border: 2px solid #3a3a4a;
+  border-radius: 12px;
+  padding: 16px 20px;
   font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
   flex: 1;
-  min-width: 60px;
+  min-width: 70px;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .btn:hover {
   background: #3a3a4a;
+  border-color: #4a4a5a;
 }
 
 .btn:active {
@@ -166,22 +172,29 @@ main {
 }
 
 .btn-sm {
-  padding: 8px 14px;
-  min-width: 40px;
+  padding: 12px 18px;
+  min-width: 50px;
   flex: 0;
+
+  display: flex; /* enable flex layout */
+  justify-content: center; /* horizontal centering */
+  align-items: center; /* vertical centering */
+  text-align: center; /* fallback for inline text */
 }
 
 .btn-full {
   width: 100%;
-  padding: 14px;
-  font-size: 16px;
+  padding: 20px;
+  font-size: 20px;
 }
 
 /* Scores panel */
 
 .scores-panel {
-  display: flex;
-  gap: 16px;
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
 }
 
 .scores-panel h2 {
@@ -189,15 +202,18 @@ main {
 }
 
 .team-col {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .big-value {
-  font-size: 48px;
+  font-size: 72px;
   font-weight: 700;
   text-align: center;
   font-variant-numeric: tabular-nums;
-  margin: 8px 0 12px;
+  font-family: "Bebas Neue", sans-serif;
+  line-height: 1;
+  margin: 12px 0 16px;
 }
 
 /* Inline control */
@@ -206,11 +222,11 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .separator {
-  font-size: 32px;
+  font-size: 40px;
   color: #6e6e7e;
 }
 
@@ -218,40 +234,65 @@ main {
 
 .possession-display {
   text-align: center;
-  margin-top: 10px;
-  font-size: 14px;
+  margin-top: 12px;
+  font-size: 16px;
   color: #6e6e7e;
-  letter-spacing: 1px;
-}
-
-/* Settings */
-
-.settings-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 15px;
-  color: #b4b4c0;
-  border-bottom: 1px solid #252530;
-}
-
-.settings-row:last-child {
-  border-bottom: none;
+  letter-spacing: 2px;
+  font-weight: 600;
 }
 
 /* Responsive */
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   header {
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .status-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .clock-value {
+    font-size: 24px;
+    min-width: 60px;
+  }
+
+  main {
+    grid-template-columns: 1fr;
+    padding: 16px;
   }
 
   .scores-panel {
-    flex-direction: column;
+    grid-column: span 1;
+    grid-template-columns: 1fr;
   }
 
   .big-value {
+    font-size: 56px;
+  }
+
+  .btn {
+    padding: 14px 16px;
+    font-size: 16px;
+    min-width: 60px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .clock-value {
     font-size: 36px;
+    min-width: 90px;
+  }
+
+  .big-value {
+    font-size: 96px;
+  }
+
+  .btn {
+    padding: 20px 24px;
+    font-size: 20px;
   }
 }
