@@ -1,16 +1,9 @@
-/**
- * DOM Utilities Module
- * Handles DOM element selection and common DOM operations
- */
+/** DOM helper functions */
 
-/**
- * Get element by ID (shorthand)
- */
+/** Get element by ID. */
 export const $ = (id) => document.getElementById(id);
 
-/**
- * Get all DOM elements used by the scoreboard
- */
+/** Return all scoreboard DOM element references. */
 export function getElements() {
   return {
     homeScore: $("homeScore"),
@@ -29,46 +22,26 @@ export function getElements() {
   };
 }
 
-/**
- * Add animation class and remove after duration
- * @param {HTMLElement} element - Element to animate
- * @param {string} animationClass - CSS class to apply
- * @param {number} duration - Duration in milliseconds
- */
+/** Temporarily apply a CSS class for the given duration (ms). */
 export function triggerAnimation(element, animationClass, duration = 600) {
   if (!element) return;
-
   element.classList.add(animationClass);
-  setTimeout(() => {
-    element.classList.remove(animationClass);
-  }, duration);
+  setTimeout(() => element.classList.remove(animationClass), duration);
 }
 
-/**
- * Toggle CSS class on element
- * @param {HTMLElement} element - Element to toggle class on
- * @param {string} className - Class name to toggle
- * @param {boolean} condition - Whether to add or remove class
- */
+/** Toggle a CSS class based on a boolean condition. */
 export function toggleClass(element, className, condition) {
   if (!element) return;
   element.classList.toggle(className, condition);
 }
 
-/**
- * Set text content safely
- * @param {HTMLElement} element - Element to update
- * @param {string|number} text - Text content to set
- */
+/** Safely set an element's text content. */
 export function setText(element, text) {
   if (!element) return;
   element.textContent = text;
 }
 
-/**
- * Create and inject CSS styles
- * @param {string} css - CSS text to inject
- */
+/** Inject a <style> block into the document head. */
 export function injectStyles(css) {
   const style = document.createElement("style");
   style.textContent = css;

@@ -1,7 +1,4 @@
-/**
- * Event Handler Module
- * Manages all user interaction events
- */
+/** User interaction event management */
 
 import CONFIG from "./config.js";
 import { themeManager } from "./theme-manager.js";
@@ -12,35 +9,27 @@ export class EventHandler {
     this.listeners = [];
   }
 
-  /**
-   * Initialize all event listeners
-   */
+  /** Bind all event listeners. */
   init() {
     this.setupThemeToggle();
     this.setupKeyboardShortcuts();
   }
 
-  /**
-   * Setup theme toggle button
-   */
+  /** Bind theme toggle button click. */
   setupThemeToggle() {
-    if (this.elements.themeToggle) {
-      const handler = () => themeManager.toggle();
-      this.elements.themeToggle.addEventListener("click", handler);
-      this.listeners.push({
-        element: this.elements.themeToggle,
-        event: "click",
-        handler,
-      });
-    }
+    if (!this.elements.themeToggle) return;
+    const handler = () => themeManager.toggle();
+    this.elements.themeToggle.addEventListener("click", handler);
+    this.listeners.push({
+      element: this.elements.themeToggle,
+      event: "click",
+      handler,
+    });
   }
 
-  /**
-   * Setup keyboard shortcuts
-   */
+  /** Bind keyboard shortcuts. */
   setupKeyboardShortcuts() {
     const handler = (e) => {
-      // Theme toggle shortcut
       if (
         e.key === CONFIG.theme.toggleKey ||
         e.key === CONFIG.theme.toggleKey.toUpperCase()
@@ -48,18 +37,11 @@ export class EventHandler {
         themeManager.toggle();
       }
     };
-
     document.addEventListener("keydown", handler);
-    this.listeners.push({
-      element: document,
-      event: "keydown",
-      handler,
-    });
+    this.listeners.push({ element: document, event: "keydown", handler });
   }
 
-  /**
-   * Remove all event listeners
-   */
+  /** Remove all registered event listeners. */
   cleanup() {
     this.listeners.forEach(({ element, event, handler }) => {
       element.removeEventListener(event, handler);

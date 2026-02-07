@@ -1,7 +1,4 @@
-/**
- * Main Application Module
- * Orchestrates all modules and initializes the app
- */
+/** Application entry point — wires all modules together */
 
 import CONFIG from "./config.js";
 import { getElements } from "./dom-utils.js";
@@ -22,75 +19,44 @@ class ScoreboardApp {
     this.isInitialized = false;
   }
 
-  /**
-   * Initialize the entire application
-   */
+  /** Bootstrap the application. */
   init() {
-    if (this.isInitialized) {
-      console.warn("App already initialized");
-      return;
-    }
+    if (this.isInitialized) return;
 
-    console.log("🏀 Initializing Basketball Scoreboard...");
+    console.log("Initializing scoreboard...");
 
-    // Get DOM elements
     this.elements = getElements();
-
-    // Initialize managers
     this.uiUpdater = new UIUpdater(this.elements);
     this.eventHandler = new EventHandler(this.elements);
 
-    // Setup theme
     themeManager.init();
-
-    // Setup animations
     initAnimations();
-
-    // Setup event handlers
     this.eventHandler.init();
-
-    // Setup clock manager callbacks
     this.setupClockManager();
-
-    // Setup state listeners
     this.setupStateListeners();
-
-    // Start Firebase listener
     this.startFirebaseSync();
 
     this.isInitialized = true;
-    console.log("✅ Scoreboard initialized successfully");
+    console.log("Scoreboard ready");
   }
 
-  /**
-   * Setup clock manager with update callback
-   */
+  /** Forward clock ticks to the UI updater. */
   setupClockManager() {
-    clockManager.onUpdate((clockData) => {
-      // Update UI with clock data
-      this.uiUpdater.updateClocks(clockData);
-    });
+    clockManager.onUpdate((data) => this.uiUpdater.updateClocks(data));
   }
 
-  /**
-   * Setup state change listeners
-   */
+  /** Re-render UI on every state change. */
   setupStateListeners() {
-    stateStore.subscribe((state, previousState) => {
-      // Update UI with new state
-      this.uiUpdater.updateAll(state, previousState);
-    });
+    stateStore.subscribe((state, prev) =>
+      this.uiUpdater.updateAll(state, prev),
+    );
   }
 
-  /**
-   * Start syncing with Firebase
-   */
+  /** Map incoming Firebase data to clock manager and state store. */
   startFirebaseSync() {
     firebaseService.listen((data) => {
-      // Sync clock manager with Firebase data
       clockManager.syncWithFirebase(data);
 
-      // Update state store with Firebase data
       stateStore.setState({
         homeScore: data.homeScore ?? 0,
         awayScore: data.awayScore ?? 0,
@@ -112,28 +78,15 @@ class ScoreboardApp {
     });
   }
 
-  /**
-   * Cleanup and destroy the app
-   */
+  /** Tear down all listeners and intervals. */
   destroy() {
-    console.log("🧹 Cleaning up scoreboard...");
-
-    // Stop clock
     clockManager.stop();
-
-    // Remove event listeners
     this.eventHandler.cleanup();
-
-    // Stop Firebase listener
     firebaseService.stopListening();
-
     this.isInitialized = false;
-    console.log("✅ Cleanup complete");
   }
 
-  /**
-   * Get app info
-   */
+  /** Return diagnostic info. */
   getInfo() {
     return {
       initialized: this.isInitialized,
@@ -145,15 +98,12 @@ class ScoreboardApp {
   }
 }
 
-// Create singleton instance
 const app = new ScoreboardApp();
 
-// Initialize on DOM ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => app.init());
 } else {
   app.init();
 }
 
-// Export for debugging/testing
 export default app;

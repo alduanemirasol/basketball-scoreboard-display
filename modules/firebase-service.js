@@ -1,7 +1,4 @@
-/**
- * Firebase Service Module
- * Handles all Firebase database operations
- */
+/** Firebase Realtime Database listener */
 
 import { db } from "../firebase.js";
 import {
@@ -17,41 +14,25 @@ class FirebaseService {
     this.unsubscribe = null;
   }
 
-  /**
-   * Initialize Firebase listener
-   * @param {Function} callback - Called when data changes
-   */
+  /** Start listening for scoreboard changes. */
   listen(callback) {
     this.dbRef = ref(db, CONFIG.firebase.databasePath);
 
-    const handleSnapshot = (snapshot) => {
+    onValue(this.dbRef, (snapshot) => {
       const data = snapshot.val();
-
       if (!data) {
         console.warn("No scoreboard data available");
         return;
       }
+      if (callback) callback(data);
+    });
 
-      // Pass data to callback
-      if (callback) {
-        callback(data);
-      }
-    };
-
-    // Start listening
-    onValue(this.dbRef, handleSnapshot);
-
-    // Store unsubscribe function
     this.unsubscribe = () => {
-      if (this.dbRef) {
-        off(this.dbRef);
-      }
+      if (this.dbRef) off(this.dbRef);
     };
   }
 
-  /**
-   * Stop listening to Firebase updates
-   */
+  /** Stop listening for updates. */
   stopListening() {
     if (this.unsubscribe) {
       this.unsubscribe();
@@ -59,14 +40,10 @@ class FirebaseService {
     }
   }
 
-  /**
-   * Get database reference
-   * @returns {Object} Firebase database reference
-   */
+  /** @returns {Object} Current database reference */
   getRef() {
     return this.dbRef;
   }
 }
 
-// Create and export singleton instance
 export const firebaseService = new FirebaseService();

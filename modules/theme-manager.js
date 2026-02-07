@@ -1,7 +1,4 @@
-/**
- * Theme Manager Module
- * Handles theme switching and persistence
- */
+/** Theme switching and persistence */
 
 import CONFIG from "./config.js";
 import { triggerAnimation } from "./dom-utils.js";
@@ -11,78 +8,47 @@ class ThemeManager {
     this.currentTheme = CONFIG.theme.defaultTheme;
   }
 
-  /**
-   * Initialize theme from storage or default
-   */
+  /** Load saved theme or apply default. */
   init() {
-    const savedTheme =
+    const saved =
       localStorage.getItem(CONFIG.theme.storageKey) ||
       CONFIG.theme.defaultTheme;
-    this.setTheme(savedTheme, false);
+    this.setTheme(saved, false);
   }
 
-  /**
-   * Set the current theme
-   * @param {string} theme - Theme name ('dark' or 'light')
-   * @param {boolean} animate - Whether to animate the change
-   */
+  /** Apply a theme and optionally animate the toggle button. */
   setTheme(theme, animate = true) {
-    // Remove all theme classes
     document.body.classList.remove("theme-dark", "theme-light");
-
-    // Add new theme class
     document.body.classList.add(`theme-${theme}`);
-
     this.currentTheme = theme;
-
-    // Save to storage
     localStorage.setItem(CONFIG.theme.storageKey, theme);
 
-    // Trigger animation if requested
     if (animate) {
-      const toggleButton = document.getElementById("themeToggle");
-      if (toggleButton) {
-        triggerAnimation(
-          toggleButton,
-          "theme-change",
-          CONFIG.animations.themeChange,
-        );
-      }
+      const btn = document.getElementById("themeToggle");
+      if (btn)
+        triggerAnimation(btn, "theme-change", CONFIG.animations.themeChange);
     }
   }
 
-  /**
-   * Toggle between dark and light themes
-   */
+  /** Toggle between dark and light. */
   toggle() {
-    const newTheme = this.currentTheme === "dark" ? "light" : "dark";
-    this.setTheme(newTheme, true);
+    this.setTheme(this.currentTheme === "dark" ? "light" : "dark");
   }
 
-  /**
-   * Get current theme
-   * @returns {string}
-   */
+  /** @returns {string} */
   getTheme() {
     return this.currentTheme;
   }
 
-  /**
-   * Check if current theme is dark
-   * @returns {boolean}
-   */
+  /** @returns {boolean} */
   isDark() {
     return this.currentTheme === "dark";
   }
 
-  /**
-   * Check if current theme is light
-   * @returns {boolean}
-   */
+  /** @returns {boolean} */
   isLight() {
     return this.currentTheme === "light";
   }
 }
 
-// Create and export singleton instance
 export const themeManager = new ThemeManager();

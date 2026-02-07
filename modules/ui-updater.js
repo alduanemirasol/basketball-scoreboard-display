@@ -1,7 +1,4 @@
-/**
- * UI Updater Module
- * Handles all UI updates and visual feedback
- */
+/** UI update logic for all scoreboard display elements */
 
 import CONFIG from "./config.js";
 import { formatTime } from "./utils.js";
@@ -13,54 +10,30 @@ export class UIUpdater {
     this.previousGameTime = CONFIG.game.defaultGameDuration;
   }
 
-  /**
-   * Play buzzer sound when game clock reaches zero
-   */
+  /** Play the buzzer audio element. */
   playBuzzerSound() {
-    const buzzerSound = document.getElementById("buzzerSound");
-    if (buzzerSound) {
-      buzzerSound.currentTime = 0;
-      const playPromise = buzzerSound.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log("✅ Buzzer sound playing");
-          })
-          .catch((err) => {
-            console.error("❌ Buzzer play error:", err);
-          });
-      }
-    } else {
-      console.warn("Buzzer sound element not found");
-    }
+    const buzzer = document.getElementById("buzzerSound");
+    if (!buzzer) return;
+    buzzer.currentTime = 0;
+    buzzer.play().catch((err) => console.error("Buzzer play failed:", err));
   }
 
-  /**
-   * Update score displays
-   * @param {number} homeScore
-   * @param {number} awayScore
-   */
+  /** Update score text for both teams. */
   updateScores(homeScore, awayScore) {
     setText(this.elements.homeScore, homeScore ?? 0);
     setText(this.elements.awayScore, awayScore ?? 0);
   }
 
-  /**
-   * Animate score changes
-   * @param {number} newHomeScore
-   * @param {number} newAwayScore
-   * @param {number} oldHomeScore
-   * @param {number} oldAwayScore
-   */
-  animateScoreChange(newHomeScore, newAwayScore, oldHomeScore, oldAwayScore) {
-    if (newHomeScore !== oldHomeScore) {
+  /** Trigger score-change animation when values differ. */
+  animateScoreChange(newHome, newAway, oldHome, oldAway) {
+    if (newHome !== oldHome) {
       triggerAnimation(
         this.elements.homeScore,
         "score-changed",
         CONFIG.animations.scoreChange,
       );
     }
-    if (newAwayScore !== oldAwayScore) {
+    if (newAway !== oldAway) {
       triggerAnimation(
         this.elements.awayScore,
         "score-changed",
@@ -69,178 +42,131 @@ export class UIUpdater {
     }
   }
 
-  /**
-   * Update team leading indicators
-   * @param {number} homeScore
-   * @param {number} awayScore
-   */
+  /** Toggle leading-team highlight classes. */
   updateLeadingTeam(homeScore, awayScore) {
-    const isHomeLeading = homeScore > awayScore;
-    const isAwayLeading = awayScore > homeScore;
-
-    toggleClass(this.elements.homeTeam, "is-leading", isHomeLeading);
-    toggleClass(this.elements.awayTeam, "is-leading", isAwayLeading);
+    toggleClass(this.elements.homeTeam, "is-leading", homeScore > awayScore);
+    toggleClass(this.elements.awayTeam, "is-leading", awayScore > homeScore);
   }
 
-  /**
-   * Update possession indicators
-   * @param {string|null} possession
-   * @param {string|null} previousPossession
-   */
+  /** Update possession indicator and animate on change. */
   updatePossession(possession, previousPossession) {
-    const hasHomePos = possession === CONFIG.possession.home;
-    const hasAwayPos = possession === CONFIG.possession.away;
+    const hasHome = possession === CONFIG.possession.home;
+    const hasAway = possession === CONFIG.possession.away;
 
-    toggleClass(this.elements.homeTeam, "has-possession", hasHomePos);
-    toggleClass(this.elements.awayTeam, "has-possession", hasAwayPos);
+    toggleClass(this.elements.homeTeam, "has-possession", hasHome);
+    toggleClass(this.elements.awayTeam, "has-possession", hasAway);
 
-    // Animate possession change
     if (possession !== previousPossession && possession) {
-      const activeTeam = hasHomePos
-        ? this.elements.homeTeam
-        : this.elements.awayTeam;
+      const team = hasHome ? this.elements.homeTeam : this.elements.awayTeam;
       triggerAnimation(
-        activeTeam,
+        team,
         "possession-change",
         CONFIG.animations.possessionChange,
       );
     }
   }
 
-  /**
-   * Update foul displays with warning states
-   * @param {number} homeFouls
-   * @param {number} awayFouls
-   */
+  /** Update foul counts and apply warning/danger classes. */
   updateFouls(homeFouls, awayFouls) {
     setText(this.elements.homeFouls, homeFouls ?? 0);
     setText(this.elements.awayFouls, awayFouls ?? 0);
 
-    const homeFoulsContainer = this.elements.homeFouls?.closest(".stat-item");
-    const awayFoulsContainer = this.elements.awayFouls?.closest(".stat-item");
+    const homeContainer = this.elements.homeFouls?.closest(".stat-item");
+    const awayContainer = this.elements.awayFouls?.closest(".stat-item");
 
-    if (homeFoulsContainer) {
+    if (homeContainer) {
       toggleClass(
-        homeFoulsContainer,
+        homeContainer,
         "high-fouls",
         homeFouls >= CONFIG.fouls.warningThreshold &&
           homeFouls < CONFIG.fouls.dangerThreshold,
       );
       toggleClass(
-        homeFoulsContainer,
+        homeContainer,
         "danger-fouls",
         homeFouls >= CONFIG.fouls.dangerThreshold,
       );
     }
 
-    if (awayFoulsContainer) {
+    if (awayContainer) {
       toggleClass(
-        awayFoulsContainer,
+        awayContainer,
         "high-fouls",
         awayFouls >= CONFIG.fouls.warningThreshold &&
           awayFouls < CONFIG.fouls.dangerThreshold,
       );
       toggleClass(
-        awayFoulsContainer,
+        awayContainer,
         "danger-fouls",
         awayFouls >= CONFIG.fouls.dangerThreshold,
       );
     }
   }
 
-  /**
-   * Update period display
-   * @param {number} period
-   * @param {number} maxPeriod
-   */
+  /** Update period display. */
   updatePeriod(period, maxPeriod) {
     setText(this.elements.period, period ?? CONFIG.game.defaultPeriod);
     setText(this.elements.maxPeriod, maxPeriod ?? CONFIG.game.maxPeriods);
   }
 
   /**
-   * Update game clock display
-   * @param {string} formattedTime - Already formatted time string
-   * @param {number} gameTime - Raw game time in seconds
+   * Update game clock text. When gameTime is provided, detect
+   * the zero-transition to trigger the buzzer and apply the red style.
    */
   updateGameClock(formattedTime, gameTime = null) {
     setText(this.elements.gameClock, formattedTime);
 
-    // Handle clock zero detection and buzzer
     if (gameTime !== null) {
       if (this.previousGameTime > 0 && gameTime <= 0) {
-        // Clock just reached zero - play buzzer and show red
         this.playBuzzerSound();
-        console.log("🔔 Clock reached zero - playing buzzer");
       }
 
-      // Update clock zero class
       if (gameTime <= 0) {
         this.elements.gameClock.classList.add("clock-zero");
       } else {
         this.elements.gameClock.classList.remove("clock-zero");
       }
 
-      // Update previous time for next comparison
       this.previousGameTime = gameTime;
     }
   }
 
-  /**
-   * Update shot clock display
-   * @param {number} shotTime - Shot clock time in seconds
-   */
+  /** Update shot clock text and warning/danger classes. */
   updateShotClock(shotTime) {
     setText(this.elements.shotClock, shotTime);
 
-    const shotClockContainer = document.querySelector(".shot-clock-container");
-    if (!shotClockContainer) return;
+    const container = document.querySelector(".shot-clock-container");
+    if (!container) return;
 
-    // Remove all warning classes
-    shotClockContainer.classList.remove("warning", "danger");
+    container.classList.remove("warning", "danger");
 
-    // Add appropriate warning class
     if (shotTime <= CONFIG.shotClock.dangerThreshold && shotTime > 0) {
-      shotClockContainer.classList.add("danger");
+      container.classList.add("danger");
     } else if (
       shotTime <= CONFIG.shotClock.warningThreshold &&
       shotTime > CONFIG.shotClock.dangerThreshold
     ) {
-      shotClockContainer.classList.add("warning");
+      container.classList.add("warning");
     }
   }
 
-  /**
-   * Update game status display and body classes
-   * @param {string} status
-   */
+  /** Update status text and body-level state classes. */
   updateStatus(status) {
-    const statusText = status.toUpperCase();
-    setText(this.elements.status, statusText);
-
-    // Update body classes for global styling
+    setText(this.elements.status, status.toUpperCase());
     toggleClass(document.body, "running", status === CONFIG.status.running);
     toggleClass(document.body, "paused", status === CONFIG.status.paused);
     toggleClass(document.body, "idle", status === CONFIG.status.idle);
     toggleClass(document.body, "finished", status === CONFIG.status.finished);
   }
 
-  /**
-   * Update both clocks at once
-   * @param {Object} clockData - Clock data from clockManager
-   */
+  /** Update both game clock and shot clock from clockManager data. */
   updateClocks(clockData) {
     this.updateGameClock(clockData.gameFormatted, clockData.gameTime);
     this.updateShotClock(clockData.shotTime);
   }
 
-  /**
-   * Update all UI elements at once
-   * @param {Object} state - Current state
-   * @param {Object} previousState - Previous state
-   */
+  /** Full UI refresh from state (called on every state change). */
   updateAll(state, previousState) {
-    // Animate score changes before updating
     if (previousState) {
       this.animateScoreChange(
         state.homeScore,
@@ -250,7 +176,6 @@ export class UIUpdater {
       );
     }
 
-    // Update all displays
     this.updateScores(state.homeScore, state.awayScore);
     this.updateFouls(state.homeFouls, state.awayFouls);
     this.updatePeriod(state.period, state.maxPeriod);
