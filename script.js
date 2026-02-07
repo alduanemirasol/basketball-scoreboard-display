@@ -272,7 +272,3 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
-
-// Log initialization
-console.log("🏀 Basketball Scoreboard initialized");
-console.log("📡 Listening to Firebase for live updates...");
