@@ -1,5 +1,4 @@
 /** Scoreboard controller */
-
 import { db } from "./firebase.js";
 import {
   ref,
@@ -202,6 +201,7 @@ function pauseClock() {
   });
 }
 
+// Reset clock
 function resetClock() {
   push({
     status: "idle",
