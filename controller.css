@@ -1,0 +1,257 @@
+/* Controller styles */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Rajdhani", sans-serif;
+  background: #0d0d0f;
+  color: #fff;
+  min-height: 100vh;
+  padding: 0 0 40px;
+}
+
+header {
+  background: #1a1a1f;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #252530;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.clock-label {
+  font-size: 12px;
+  color: #6e6e7e;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.clock-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 50px;
+  text-align: center;
+}
+
+.status-badge {
+  background: #252530;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Panels */
+
+.panel {
+  background: #1a1a1f;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #252530;
+}
+
+.panel h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6e6e7e;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+
+/* Buttons */
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background: #252530;
+  color: #fff;
+  border: 1px solid #3a3a4a;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex: 1;
+  min-width: 60px;
+  text-align: center;
+}
+
+.btn:hover {
+  background: #3a3a4a;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn.active {
+  background: #ff6b35;
+  border-color: #ff6b35;
+  color: #fff;
+}
+
+.btn-green {
+  background: #1a4a2a;
+  border-color: #2a6a3a;
+}
+
+.btn-green:hover {
+  background: #2a6a3a;
+}
+
+.btn-green.active {
+  background: #00c853;
+  border-color: #00c853;
+}
+
+.btn-yellow {
+  background: #4a3a1a;
+  border-color: #6a5a2a;
+}
+
+.btn-yellow:hover {
+  background: #6a5a2a;
+}
+
+.btn-yellow.active {
+  background: #ffc107;
+  border-color: #ffc107;
+  color: #000;
+}
+
+.btn-red {
+  background: #4a1a1a;
+  border-color: #6a2a2a;
+}
+
+.btn-red:hover {
+  background: #6a2a2a;
+}
+
+.btn-sm {
+  padding: 8px 14px;
+  min-width: 40px;
+  flex: 0;
+}
+
+.btn-full {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+}
+
+/* Scores panel */
+
+.scores-panel {
+  display: flex;
+  gap: 16px;
+}
+
+.scores-panel h2 {
+  text-align: center;
+}
+
+.team-col {
+  flex: 1;
+}
+
+.big-value {
+  font-size: 48px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  margin: 8px 0 12px;
+}
+
+/* Inline control */
+
+.inline-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.separator {
+  font-size: 32px;
+  color: #6e6e7e;
+}
+
+/* Possession */
+
+.possession-display {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #6e6e7e;
+  letter-spacing: 1px;
+}
+
+/* Settings */
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 15px;
+  color: #b4b4c0;
+  border-bottom: 1px solid #252530;
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+/* Responsive */
+
+@media (max-width: 480px) {
+  header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .scores-panel {
+    flex-direction: column;
+  }
+
+  .big-value {
+    font-size: 36px;
+  }
+}

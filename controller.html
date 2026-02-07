@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scoreboard Controller</title>
+    <link rel="icon" href="assets/icons/basketball-ball-icon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="controller.css" />
+</head>
+
+<body>
+    <header>
+        <h1>Scoreboard Controller</h1>
+        <div class="status-bar">
+            <span class="clock-label">Game</span>
+            <span class="clock-value" id="gameClockDisplay">12:00</span>
+            <span class="clock-label">Shot</span>
+            <span class="clock-value" id="shotClockDisplay">24</span>
+            <span class="status-badge" id="statusVal">IDLE</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Clock Controls -->
+        <section class="panel">
+            <h2>Clock</h2>
+            <div class="btn-row">
+                <button data-action="clock-start" data-status-action="start" class="btn btn-green">Start</button>
+                <button data-action="clock-pause" data-status-action="pause" class="btn btn-yellow">Pause</button>
+                <button data-action="clock-reset" data-status-action="reset" class="btn btn-red">Reset</button>
+            </div>
+        </section>
+
+        <!-- Shot Clock Controls -->
+        <section class="panel">
+            <h2>Shot Clock</h2>
+            <div class="btn-row">
+                <button data-action="shot-reset-full" class="btn">Reset 24</button>
+                <button data-action="shot-reset-partial" class="btn">Reset 14</button>
+            </div>
+        </section>
+
+        <!-- Scores -->
+        <section class="panel scores-panel">
+            <div class="team-col">
+                <h2>Home</h2>
+                <div class="big-value" id="homeScoreVal">0</div>
+                <div class="btn-row">
+                    <button data-action="home-score-up" data-points="1" class="btn">+1</button>
+                    <button data-action="home-score-up" data-points="2" class="btn">+2</button>
+                    <button data-action="home-score-up" data-points="3" class="btn">+3</button>
+                    <button data-action="home-score-down" class="btn btn-red">-1</button>
+                </div>
+            </div>
+            <div class="team-col">
+                <h2>Away</h2>
+                <div class="big-value" id="awayScoreVal">0</div>
+                <div class="btn-row">
+                    <button data-action="away-score-up" data-points="1" class="btn">+1</button>
+                    <button data-action="away-score-up" data-points="2" class="btn">+2</button>
+                    <button data-action="away-score-up" data-points="3" class="btn">+3</button>
+                    <button data-action="away-score-down" class="btn btn-red">-1</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fouls -->
+        <section class="panel scores-panel">
+            <div class="team-col">
+                <h2>Home Fouls</h2>
+                <div class="big-value" id="homeFoulsVal">0</div>
+                <div class="btn-row">
+                    <button data-action="home-foul-up" class="btn">+1</button>
+                    <button data-action="home-foul-down" class="btn btn-red">-1</button>
+                </div>
+            </div>
+            <div class="team-col">
+                <h2>Away Fouls</h2>
+                <div class="big-value" id="awayFoulsVal">0</div>
+                <div class="btn-row">
+                    <button data-action="away-foul-up" class="btn">+1</button>
+                    <button data-action="away-foul-down" class="btn btn-red">-1</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Period -->
+        <section class="panel">
+            <h2>Period</h2>
+            <div class="inline-control">
+                <button data-action="period-down" class="btn btn-sm">-</button>
+                <span class="big-value" id="periodVal">1</span>
+                <span class="separator">/</span>
+                <span class="big-value" id="maxPeriodVal">4</span>
+                <button data-action="period-up" class="btn btn-sm">+</button>
+            </div>
+        </section>
+
+        <!-- Possession -->
+        <section class="panel">
+            <h2>Possession</h2>
+            <div class="btn-row">
+                <button data-possession="home" class="btn">Home</button>
+                <button data-possession="none" class="btn">None</button>
+                <button data-possession="away" class="btn">Away</button>
+            </div>
+            <div class="possession-display" id="possessionVal">NONE</div>
+        </section>
+
+        <!-- Reset -->
+        <section class="panel">
+            <button data-action="game-reset" class="btn btn-red btn-full">Reset Entire Game</button>
+        </section>
+    </main>
+
+    <script type="module" src="controller.js"></script>
+</body>
+
+</html>
