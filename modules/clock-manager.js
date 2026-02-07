@@ -3,6 +3,9 @@
 import CONFIG from "./config.js";
 import { formatTime, parseTimestamp } from "./utils.js";
 
+const STORAGE_KEY_GAME = "scoreboard-gameClockStartedAt";
+const STORAGE_KEY_SHOT = "scoreboard-shotClockStartedAt";
+
 class ClockManager {
   constructor() {
     this.interval = null;
@@ -35,12 +38,18 @@ class ClockManager {
     this.shotElapsedBeforePause = data.shotElapsedBeforePause ?? 0;
     this.status = data.status ?? CONFIG.status.idle;
 
-    // Fallback to local timestamp when server timestamp is absent
+    // When running but server has no timestamp, restore or create a local one
     if (this.status === CONFIG.status.running && !this.gameClockStartedAt) {
-      this.gameClockStartedAt = Date.now();
+      this.gameClockStartedAt = this.restoreOrCreateTimestamp(STORAGE_KEY_GAME);
     }
     if (this.status === CONFIG.status.running && !this.shotClockStartedAt) {
-      this.shotClockStartedAt = Date.now();
+      this.shotClockStartedAt = this.restoreOrCreateTimestamp(STORAGE_KEY_SHOT);
+    }
+
+    // Clear stored timestamps when not running
+    if (this.status !== CONFIG.status.running) {
+      sessionStorage.removeItem(STORAGE_KEY_GAME);
+      sessionStorage.removeItem(STORAGE_KEY_SHOT);
     }
 
     if (this.status === CONFIG.status.running) {
@@ -49,6 +58,15 @@ class ClockManager {
       this.stop();
       this.emitUpdate();
     }
+  }
+
+  /** Restore a timestamp from sessionStorage or create and persist a new one. */
+  restoreOrCreateTimestamp(key) {
+    const stored = sessionStorage.getItem(key);
+    if (stored) return Number(stored);
+    const now = Date.now();
+    sessionStorage.setItem(key, now.toString());
+    return now;
   }
 
   /** @returns {number} Remaining game clock seconds */
@@ -121,6 +139,8 @@ class ClockManager {
     this.shotClockStartedAt = null;
     this.shotElapsedBeforePause = 0;
     this.status = CONFIG.status.idle;
+    sessionStorage.removeItem(STORAGE_KEY_GAME);
+    sessionStorage.removeItem(STORAGE_KEY_SHOT);
   }
 }
 
