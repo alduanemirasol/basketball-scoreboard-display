@@ -38,6 +38,9 @@ let previousData = {
   status: "paused",
 };
 
+let gameClockInterval = null;
+let currentGameClock = 720; // Store current game clock value in seconds
+
 // ========================================
 // UTILITY FUNCTIONS
 // ========================================
@@ -141,6 +144,42 @@ function updateGameStatus(status) {
   // Update body classes for global styling
   document.body.classList.toggle("running", status === "running");
   document.body.classList.toggle("paused", status === "paused");
+
+  // Start or stop the game clock based on status
+  if (status === "running") {
+    startGameClock();
+  } else {
+    stopGameClock();
+  }
+}
+
+/**
+ * Start the game clock countdown
+ */
+function startGameClock() {
+  // Clear any existing interval
+  stopGameClock();
+
+  // Start new interval that updates every second
+  gameClockInterval = setInterval(() => {
+    if (currentGameClock > 0) {
+      currentGameClock--;
+      elements.gameClock.textContent = formatTime(currentGameClock);
+    } else {
+      // Clock reached 0, stop the interval
+      stopGameClock();
+    }
+  }, 1000);
+}
+
+/**
+ * Stop the game clock countdown
+ */
+function stopGameClock() {
+  if (gameClockInterval) {
+    clearInterval(gameClockInterval);
+    gameClockInterval = null;
+  }
 }
 
 /**
@@ -172,6 +211,9 @@ onValue(scoreboardRef, (snapshot) => {
   // Detect score changes before updating
   handleScoreChange(data.homeScore, data.awayScore);
 
+  // Update current game clock from Firebase (sync with database)
+  currentGameClock = data.gameClock ?? 720;
+
   // Update all display elements
   elements.homeScore.textContent = data.homeScore ?? 0;
   elements.awayScore.textContent = data.awayScore ?? 0;
@@ -179,7 +221,7 @@ onValue(scoreboardRef, (snapshot) => {
   elements.awayFouls.textContent = data.awayFouls ?? 0;
   elements.period.textContent = data.period ?? 1;
   elements.maxPeriod.textContent = data.maxPeriod ?? 4;
-  elements.gameClock.textContent = formatTime(data.gameClock ?? 720);
+  elements.gameClock.textContent = formatTime(currentGameClock);
   elements.shotClock.textContent = data.shotClock ?? 24;
 
   // Update game states
