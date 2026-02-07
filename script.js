@@ -212,7 +212,7 @@ onValue(scoreboardRef, (snapshot) => {
   handleScoreChange(data.homeScore, data.awayScore);
 
   // Update current game clock from Firebase (sync with database)
-  currentGameClock = data.gameClock ?? 720;
+  currentGameClock = data.gameDuration ?? 720;
 
   // Update all display elements
   elements.homeScore.textContent = data.homeScore ?? 0;
@@ -222,20 +222,20 @@ onValue(scoreboardRef, (snapshot) => {
   elements.period.textContent = data.period ?? 1;
   elements.maxPeriod.textContent = data.maxPeriod ?? 4;
   elements.gameClock.textContent = formatTime(currentGameClock);
-  elements.shotClock.textContent = data.shotClock ?? 24;
+  elements.shotClock.textContent = data.shotDuration ?? 24;
 
   // Update game states
   updateLeadingTeam(data.homeScore, data.awayScore);
   updatePossession(data.possession);
   updateFouls(data.homeFouls, data.awayFouls);
-  updateShotClock(data.shotClock);
+  updateShotClock(data.shotDuration);
   updateGameStatus(data.status || "paused");
 
   // Store current data for next comparison
   previousData = {
     homeScore: data.homeScore,
     awayScore: data.awayScore,
-    shotClock: data.shotClock,
+    shotClock: data.shotDuration,
     possession: data.possession,
     status: data.status,
   };
