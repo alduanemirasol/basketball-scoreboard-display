@@ -10,6 +10,29 @@ import { triggerAnimation, toggleClass, setText } from "./dom-utils.js";
 export class UIUpdater {
   constructor(elements) {
     this.elements = elements;
+    this.previousGameTime = CONFIG.game.defaultGameDuration;
+  }
+
+  /**
+   * Play buzzer sound when game clock reaches zero
+   */
+  playBuzzerSound() {
+    const buzzerSound = document.getElementById("buzzerSound");
+    if (buzzerSound) {
+      buzzerSound.currentTime = 0;
+      const playPromise = buzzerSound.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log("✅ Buzzer sound playing");
+          })
+          .catch((err) => {
+            console.error("❌ Buzzer play error:", err);
+          });
+      }
+    } else {
+      console.warn("Buzzer sound element not found");
+    }
   }
 
   /**
@@ -138,9 +161,29 @@ export class UIUpdater {
   /**
    * Update game clock display
    * @param {string} formattedTime - Already formatted time string
+   * @param {number} gameTime - Raw game time in seconds
    */
-  updateGameClock(formattedTime) {
+  updateGameClock(formattedTime, gameTime = null) {
     setText(this.elements.gameClock, formattedTime);
+
+    // Handle clock zero detection and buzzer
+    if (gameTime !== null) {
+      if (this.previousGameTime > 0 && gameTime <= 0) {
+        // Clock just reached zero - play buzzer and show red
+        this.playBuzzerSound();
+        console.log("🔔 Clock reached zero - playing buzzer");
+      }
+
+      // Update clock zero class
+      if (gameTime <= 0) {
+        this.elements.gameClock.classList.add("clock-zero");
+      } else {
+        this.elements.gameClock.classList.remove("clock-zero");
+      }
+
+      // Update previous time for next comparison
+      this.previousGameTime = gameTime;
+    }
   }
 
   /**
@@ -187,7 +230,7 @@ export class UIUpdater {
    * @param {Object} clockData - Clock data from clockManager
    */
   updateClocks(clockData) {
-    this.updateGameClock(clockData.gameFormatted);
+    this.updateGameClock(clockData.gameFormatted, clockData.gameTime);
     this.updateShotClock(clockData.shotTime);
   }
 

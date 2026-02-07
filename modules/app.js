@@ -5,6 +5,7 @@
 
 import CONFIG from "./config.js";
 import { getElements } from "./dom-utils.js";
+import { parseTimestamp } from "./utils.js";
 import { stateStore } from "./state.js";
 import { clockManager } from "./clock-manager.js";
 import { themeManager } from "./theme-manager.js";
@@ -102,9 +103,9 @@ class ScoreboardApp {
         shotPartialReset:
           data.shotPartialReset ?? CONFIG.game.defaultShotPartialReset,
         status: data.status ?? CONFIG.status.idle,
-        clockStartedAt: data.clockStartedAt,
+        clockStartedAt: parseTimestamp(data.clockStartedAt),
         elapsedBeforePause: data.elapsedBeforePause ?? 0,
-        shotStartedAt: data.shotStartedAt,
+        shotStartedAt: parseTimestamp(data.shotStartedAt),
         shotElapsedBeforePause: data.shotElapsedBeforePause ?? 0,
         possession: data.possession ?? CONFIG.possession.none,
       });

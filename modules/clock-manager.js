@@ -4,7 +4,7 @@
  */
 
 import CONFIG from "./config.js";
-import { formatTime } from "./utils.js";
+import { formatTime, parseTimestamp } from "./utils.js";
 
 class ClockManager {
   constructor() {
@@ -46,19 +46,31 @@ class ClockManager {
     this.shotPartialReset =
       data.shotPartialReset ?? CONFIG.game.defaultShotPartialReset;
 
-    this.gameClockStartedAt = data.clockStartedAt;
+    this.gameClockStartedAt = parseTimestamp(data.clockStartedAt);
     this.gameElapsedBeforePause = data.elapsedBeforePause ?? 0;
 
-    this.shotClockStartedAt = data.shotStartedAt;
+    this.shotClockStartedAt = parseTimestamp(data.shotStartedAt);
     this.shotElapsedBeforePause = data.shotElapsedBeforePause ?? 0;
 
-    this.status = data.status ?? CONFIG.status.idle;
+    const newStatus = data.status ?? CONFIG.status.idle;
+    const wasRunning = this.status === CONFIG.status.running;
+    this.status = newStatus;
+
+    // If status is running but no server timestamp, use local time as fallback
+    if (this.status === CONFIG.status.running && !this.gameClockStartedAt) {
+      this.gameClockStartedAt = Date.now();
+    }
+    if (this.status === CONFIG.status.running && !this.shotClockStartedAt) {
+      this.shotClockStartedAt = Date.now();
+    }
 
     // Start or stop based on status
     if (this.status === CONFIG.status.running) {
       this.start();
     } else {
       this.stop();
+      // Emit one update so UI reflects current paused/idle clock values
+      this.emitUpdate();
     }
   }
 
@@ -105,23 +117,30 @@ class ClockManager {
   }
 
   /**
+   * Emit a single clock update to the callback
+   */
+  emitUpdate() {
+    const gameTime = this.getGameClockTime();
+    const shotTime = this.getShotClockTime();
+
+    if (this.updateCallback) {
+      this.updateCallback({
+        gameTime,
+        gameFormatted: formatTime(gameTime),
+        shotTime,
+        shotFormatted: shotTime.toString(),
+      });
+    }
+  }
+
+  /**
    * Start the clock update interval
    */
   start() {
     this.stop(); // Clear any existing interval
 
     this.interval = setInterval(() => {
-      const gameTime = this.getGameClockTime();
-      const shotTime = this.getShotClockTime();
-
-      if (this.updateCallback) {
-        this.updateCallback({
-          gameTime,
-          gameFormatted: formatTime(gameTime),
-          shotTime,
-          shotFormatted: shotTime.toString(),
-        });
-      }
+      this.emitUpdate();
     }, CONFIG.game.clockUpdateInterval);
   }
 

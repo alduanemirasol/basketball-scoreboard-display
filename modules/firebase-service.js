@@ -3,7 +3,7 @@
  * Handles all Firebase database operations
  */
 
-import { db } from "./firebase.js";
+import { db } from "../firebase.js";
 import {
   ref,
   onValue,
