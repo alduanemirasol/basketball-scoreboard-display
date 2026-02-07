@@ -115,6 +115,37 @@
         <section class="panel">
             <button data-action="game-reset" class="btn btn-red btn-full">Reset Entire Game</button>
         </section>
+
+        <!-- Admin Management -->
+        <section class="panel admin-panel">
+            <h2>Admin Management</h2>
+            <div id="authSection">
+                <div id="loginForm">
+                    <input type="email" id="adminEmail" placeholder="Admin Email" />
+                    <input type="password" id="adminPassword" placeholder="Password" />
+                    <button id="loginBtn" class="btn btn-green">Login</button>
+                    <button id="signupBtn" class="btn">Sign Up</button>
+                </div>
+                <div id="userInfo" style="display: none;">
+                    <span id="userEmail"></span>
+                    <button id="logoutBtn" class="btn btn-red">Logout</button>
+                </div>
+            </div>
+            <div id="adminSection" style="display: none;">
+                <div class="admin-action">
+                    <input type="text" id="newAdminUid" placeholder="New Admin UID" />
+                    <button id="addAdminBtn" class="btn btn-green">Add Admin</button>
+                </div>
+                <div class="admin-action">
+                    <input type="text" id="removeAdminUid" placeholder="Remove Admin UID" />
+                    <button id="removeAdminBtn" class="btn btn-red">Remove Admin</button>
+                </div>
+                <div class="admin-list">
+                    <h3>Current Admins</h3>
+                    <ul id="adminList"></ul>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script type="module" src="controller.js"></script>

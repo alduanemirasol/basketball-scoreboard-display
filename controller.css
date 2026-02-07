@@ -175,11 +175,10 @@ main {
   padding: 12px 18px;
   min-width: 50px;
   flex: 0;
-
-  display: flex; /* enable flex layout */
-  justify-content: center; /* horizontal centering */
-  align-items: center; /* vertical centering */
-  text-align: center; /* fallback for inline text */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .btn-full {
@@ -294,5 +293,135 @@ main {
   .btn {
     padding: 20px 24px;
     font-size: 20px;
+  }
+}
+
+/* Admin Management */
+
+.admin-panel {
+  grid-column: span 2;
+}
+
+#authSection {
+  margin-bottom: 20px;
+}
+
+#loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#loginForm input {
+  background: #0d0d0f;
+  border: 2px solid #3a3a4a;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #fff;
+  outline: none;
+}
+
+#loginForm input:focus {
+  border-color: #4a4a5a;
+}
+
+#loginForm input::placeholder {
+  color: #6e6e7e;
+}
+
+#userInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0d0d0f;
+  padding: 14px 18px;
+  border-radius: 12px;
+}
+
+#userEmail {
+  color: #fff;
+  font-size: 16px;
+}
+
+#adminSection {
+  background: #0d0d0f;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.admin-action {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-action input {
+  flex: 1;
+  background: #252530;
+  border: 2px solid #3a3a4a;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+}
+
+.admin-action input:focus {
+  border-color: #4a4a5a;
+}
+
+.admin-action input::placeholder {
+  color: #6e6e7e;
+}
+
+.admin-list {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #252530;
+}
+
+.admin-list h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6e6e7e;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+#adminList {
+  list-style: none;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+#adminList li {
+  background: #252530;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-family: monospace;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+#adminList li:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .admin-panel {
+    grid-column: span 1;
+  }
+
+  .admin-action {
+    flex-direction: column;
+  }
+
+  .admin-action .btn {
+    width: 100%;
   }
 }

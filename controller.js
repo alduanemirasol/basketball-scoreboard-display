@@ -1,10 +1,19 @@
 /** Scoreboard controller */
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 import {
   ref,
   update,
   onValue,
+  set,
+  remove,
+  get,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const SCOREBARD_REF = ref(db, "scoreboard");
 
@@ -316,3 +325,150 @@ document.addEventListener("click", (e) => {
   if (!btn) return;
   setPossession(btn.dataset.possession);
 });
+
+// ============================================
+// Admin Management
+// ============================================
+
+const ADMINS_REF = ref(db, "admins");
+const $authSection = document.getElementById("authSection");
+const $loginForm = document.getElementById("loginForm");
+const $userInfo = document.getElementById("userInfo");
+const $userEmail = document.getElementById("userEmail");
+const $adminSection = document.getElementById("adminSection");
+const $adminList = document.getElementById("adminList");
+
+// Check if current user is an admin
+async function checkAdminStatus(user) {
+  if (!user) return false;
+  const adminRef = ref(db, `admins/${user.uid}`);
+  const snapshot = await get(adminRef);
+  return snapshot.exists();
+}
+
+// Update UI based on auth state
+async function updateAuthUI(user) {
+  const isAdmin = await checkAdminStatus(user);
+
+  if (user && isAdmin) {
+    $loginForm.style.display = "none";
+    $userInfo.style.display = "none";
+    $adminSection.style.display = "block";
+    loadAdminList();
+  } else if (user) {
+    $loginForm.style.display = "none";
+    $userInfo.style.display = "block";
+    $userEmail.textContent = user.email;
+    $adminSection.style.display = "none";
+  } else {
+    $loginForm.style.display = "block";
+    $userInfo.style.display = "none";
+    $adminSection.style.display = "none";
+  }
+}
+
+// Load and display admin list
+async function loadAdminList() {
+  const snapshot = await get(ADMINS_REF);
+  $adminList.innerHTML = "";
+
+  if (snapshot.exists()) {
+    const admins = snapshot.val();
+    Object.keys(admins).forEach((uid) => {
+      const li = document.createElement("li");
+      li.textContent = uid;
+      $adminList.appendChild(li);
+    });
+  } else {
+    $adminList.innerHTML = "<li>No admins configured</li>";
+  }
+}
+
+// Add admin
+async function addAdmin(uid) {
+  if (!uid || uid.trim() === "") {
+    alert("Please enter a valid UID");
+    return;
+  }
+  try {
+    await set(ref(db, `admins/${uid}`), true);
+    alert(`Admin ${uid} added successfully`);
+    document.getElementById("newAdminUid").value = "";
+    loadAdminList();
+  } catch (error) {
+    console.error("Error adding admin:", error);
+    alert("Error adding admin: " + error.message);
+  }
+}
+
+// Remove admin
+async function removeAdmin(uid) {
+  if (!uid || uid.trim() === "") {
+    alert("Please enter a valid UID");
+    return;
+  }
+  if (!confirm(`Are you sure you want to remove admin ${uid}?`)) return;
+
+  try {
+    await remove(ref(db, `admins/${uid}`));
+    alert(`Admin ${uid} removed successfully`);
+    document.getElementById("removeAdminUid").value = "";
+    loadAdminList();
+  } catch (error) {
+    console.error("Error removing admin:", error);
+    alert("Error removing admin: " + error.message);
+  }
+}
+
+// Auth event listeners
+onAuthStateChanged(auth, updateAuthUI);
+
+// Login
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Login failed: " + error.message);
+  }
+});
+
+// Sign up
+document.getElementById("signupBtn").addEventListener("click", async () => {
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    console.error("Signup error:", error);
+    alert("Signup failed: " + error.message);
+  }
+});
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+});
+
+// Add admin button
+document.getElementById("addAdminBtn").addEventListener("click", () => {
+  const uid = document.getElementById("newAdminUid").value;
+  addAdmin(uid);
+});
+
+// Remove admin button
+document.getElementById("removeAdminBtn").addEventListener("click", () => {
+  const uid = document.getElementById("removeAdminUid").value;
+  removeAdmin(uid);
+});
+
+// Initial auth state check
+updateAuthUI(null);
