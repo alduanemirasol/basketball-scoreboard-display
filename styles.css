@@ -87,13 +87,11 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    var(--bg-secondary) 2px,
-    var(--bg-secondary) 4px
-  );
+  background-image: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      var(--bg-secondary) 2px,
+      var(--bg-secondary) 4px);
   opacity: 0.03;
   pointer-events: none;
   z-index: 0;
@@ -180,6 +178,7 @@ body::before {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -208,11 +207,9 @@ body::before {
   left: 0;
   right: 0;
   height: 6px;
-  background: linear-gradient(
-    90deg,
-    var(--accent-primary),
-    var(--accent-secondary)
-  );
+  background: linear-gradient(90deg,
+      var(--accent-primary),
+      var(--accent-secondary));
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -259,11 +256,13 @@ body::before {
 }
 
 @keyframes pulseGlow {
+
   0%,
   100% {
     opacity: 1;
     box-shadow: 0 0 20px var(--possession-glow);
   }
+
   50% {
     opacity: 0.7;
     box-shadow: 0 0 40px var(--possession-glow);
@@ -308,11 +307,13 @@ body::before {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.15);
     color: var(--accent-primary);
     text-shadow: 0 0 40px var(--accent-glow);
   }
+
   100% {
     transform: scale(1);
   }
@@ -364,10 +365,12 @@ body::before {
 }
 
 @keyframes foulWarning {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
@@ -397,16 +400,14 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(
-    circle at 50% 50%,
-    var(--bg-tertiary) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle at 50% 50%,
+      var(--bg-tertiary) 0%,
+      transparent 70%);
   opacity: 0.3;
   pointer-events: none;
 }
 
-.center-section > * {
+.center-section>* {
   position: relative;
   z-index: 1;
 }
@@ -470,11 +471,13 @@ body.running .clock-display {
 }
 
 @keyframes clockPulse {
+
   0%,
   100% {
     opacity: 1;
     text-shadow: 0 0 20px rgba(255, 59, 92, 0.6);
   }
+
   50% {
     opacity: 0.7;
     text-shadow: 0 0 40px rgba(255, 59, 92, 0.8);
@@ -540,10 +543,12 @@ body.running .clock-display {
 }
 
 @keyframes shotClockDanger {
+
   0%,
   100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
@@ -604,11 +609,13 @@ body.running .live-indicator {
 }
 
 @keyframes livePulse {
+
   0%,
   100% {
     opacity: 1;
     box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
   }
+
   50% {
     opacity: 0.8;
     box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
@@ -787,6 +794,7 @@ body.running .live-indicator {
    ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -804,6 +812,7 @@ button:focus-visible {
 
 /* High Contrast Support */
 @media (prefers-contrast: high) {
+
   .team-section,
   .center-section {
     border: 2px solid var(--text-secondary);

@@ -15,6 +15,10 @@ const elements = {
   awayScore: el("awayScore"),
   homeFouls: el("homeFouls"),
   awayFouls: el("awayFouls"),
+  homeTimeouts: el("homeTimeouts"),
+  awayTimeouts: el("awayTimeouts"),
+  homeTeamLabel: el("homeTeamLabel"),
+  awayTeamLabel: el("awayTeamLabel"),
   period: el("period"),
   maxPeriod: el("maxPeriod"),
   gameClock: el("gameClock"),
@@ -35,11 +39,14 @@ let previousData = {
   awayScore: 0,
   shotClock: 24,
   possession: null,
-  status: "paused",
+  clockRunning: false,
 };
 
 let gameClockInterval = null;
-let currentGameClock = 720; // Store current game clock value in seconds
+let shotClockInterval = null;
+
+// Latest data snapshot for live clock ticking
+let latestData = null;
 
 // ========================================
 // UTILITY FUNCTIONS
@@ -49,9 +56,42 @@ let currentGameClock = 720; // Store current game clock value in seconds
  * Format seconds to MM:SS display
  */
 function formatTime(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
+  const s = Math.max(0, Math.floor(seconds));
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, "0")}`;
+}
+
+/**
+ * Compute the current game clock value in seconds from server data
+ */
+function computeGameClock(data) {
+  const totalDuration = data.gameDuration ?? 720;
+  const elapsed = data.elapsedBeforePause ?? 0;
+
+  if (data.clockRunning && data.clockStartedAt) {
+    const now = Date.now();
+    const additionalElapsed = (now - data.clockStartedAt) / 1000;
+    return Math.max(0, totalDuration - elapsed - additionalElapsed);
+  } else {
+    return Math.max(0, totalDuration - elapsed);
+  }
+}
+
+/**
+ * Compute the current shot clock value in seconds from server data
+ */
+function computeShotClock(data) {
+  const shotDuration = data.shotPartialReset ?? data.shotDuration ?? 14;
+  const elapsed = data.shotElapsedBeforePause ?? 0;
+
+  if (data.shotClockRunning && data.shotStartedAt) {
+    const now = Date.now();
+    const additionalElapsed = (now - data.shotStartedAt) / 1000;
+    return Math.max(0, shotDuration - elapsed - additionalElapsed);
+  } else {
+    return Math.max(0, shotDuration - elapsed);
+  }
 }
 
 /**
@@ -100,36 +140,27 @@ function updateFouls(homeFouls, awayFouls) {
   const homeFoulsContainer = elements.homeFouls.closest(".stat-item");
   const awayFoulsContainer = elements.awayFouls.closest(".stat-item");
 
-  // Home team fouls
-  homeFoulsContainer.classList.toggle(
-    "high-fouls",
-    homeFouls >= 4 && homeFouls < 6,
-  );
+  homeFoulsContainer.classList.toggle("high-fouls", homeFouls >= 4 && homeFouls < 6);
   homeFoulsContainer.classList.toggle("danger-fouls", homeFouls >= 6);
 
-  // Away team fouls
-  awayFoulsContainer.classList.toggle(
-    "high-fouls",
-    awayFouls >= 4 && awayFouls < 6,
-  );
+  awayFoulsContainer.classList.toggle("high-fouls", awayFouls >= 4 && awayFouls < 6);
   awayFoulsContainer.classList.toggle("danger-fouls", awayFouls >= 6);
 }
 
 /**
- * Update shot clock with warning states
+ * Update shot clock display value and warning states
  */
-function updateShotClock(shotClock) {
+function updateShotClockDisplay(shotSeconds) {
   const shotClockContainer = document.querySelector(".shot-clock-container");
-
   if (!shotClockContainer) return;
 
-  // Remove all warning classes
-  shotClockContainer.classList.remove("warning", "danger");
+  // Show integer value
+  elements.shotClock.textContent = Math.ceil(shotSeconds);
 
-  // Add appropriate warning class
-  if (shotClock <= 5 && shotClock > 0) {
+  shotClockContainer.classList.remove("warning", "danger");
+  if (shotSeconds <= 5 && shotSeconds > 0) {
     shotClockContainer.classList.add("danger");
-  } else if (shotClock <= 10 && shotClock > 5) {
+  } else if (shotSeconds <= 10 && shotSeconds > 5) {
     shotClockContainer.classList.add("warning");
   }
 }
@@ -137,49 +168,41 @@ function updateShotClock(shotClock) {
 /**
  * Update game status and body classes
  */
-function updateGameStatus(status) {
-  const statusText = status.toUpperCase();
+function updateGameStatus(data) {
+  const isRunning = data.clockRunning === true;
+  const statusText = (data.status ?? "paused").toUpperCase();
   elements.status.textContent = statusText;
 
-  // Update body classes for global styling
-  document.body.classList.toggle("running", status === "running");
-  document.body.classList.toggle("paused", status === "paused");
-
-  // Start or stop the game clock based on status
-  if (status === "running") {
-    startGameClock();
-  } else {
-    stopGameClock();
-  }
+  document.body.classList.toggle("running", isRunning);
+  document.body.classList.toggle("paused", !isRunning);
 }
 
 /**
- * Start the game clock countdown
+ * Start live clock ticking intervals
  */
-function startGameClock() {
-  // Clear any existing interval
-  stopGameClock();
+function startLiveClocks() {
+  stopLiveClocks();
 
-  // Start new interval that updates every second
   gameClockInterval = setInterval(() => {
-    if (currentGameClock > 0) {
-      currentGameClock--;
-      elements.gameClock.textContent = formatTime(currentGameClock);
-    } else {
-      // Clock reached 0, stop the interval
-      stopGameClock();
-    }
-  }, 1000);
+    if (!latestData) return;
+    const seconds = computeGameClock(latestData);
+    elements.gameClock.textContent = formatTime(seconds);
+    if (seconds <= 0) stopLiveClocks();
+  }, 100);
+
+  shotClockInterval = setInterval(() => {
+    if (!latestData) return;
+    const seconds = computeShotClock(latestData);
+    updateShotClockDisplay(seconds);
+  }, 100);
 }
 
 /**
- * Stop the game clock countdown
+ * Stop live clock intervals
  */
-function stopGameClock() {
-  if (gameClockInterval) {
-    clearInterval(gameClockInterval);
-    gameClockInterval = null;
-  }
+function stopLiveClocks() {
+  if (gameClockInterval) { clearInterval(gameClockInterval); gameClockInterval = null; }
+  if (shotClockInterval) { clearInterval(shotClockInterval); shotClockInterval = null; }
 }
 
 /**
@@ -208,36 +231,53 @@ onValue(scoreboardRef, (snapshot) => {
     return;
   }
 
+  latestData = data;
+
   // Detect score changes before updating
   handleScoreChange(data.homeScore, data.awayScore);
 
-  // Update current game clock from Firebase (sync with database)
-  currentGameClock = data.gameClock ?? 720;
-
-  // Update all display elements
+  // Update static display elements
   elements.homeScore.textContent = data.homeScore ?? 0;
   elements.awayScore.textContent = data.awayScore ?? 0;
   elements.homeFouls.textContent = data.homeFouls ?? 0;
   elements.awayFouls.textContent = data.awayFouls ?? 0;
   elements.period.textContent = data.period ?? 1;
   elements.maxPeriod.textContent = data.maxPeriod ?? 4;
-  elements.gameClock.textContent = formatTime(currentGameClock);
-  elements.shotClock.textContent = data.shotClock ?? 24;
+
+  // Team names
+  if (elements.homeTeamLabel) elements.homeTeamLabel.textContent = data.homeName ?? "HOME";
+  if (elements.awayTeamLabel) elements.awayTeamLabel.textContent = data.awayName ?? "AWAY";
+
+  // Timeouts
+  if (elements.homeTimeouts) elements.homeTimeouts.textContent = data.homeTimeouts ?? 0;
+  if (elements.awayTimeouts) elements.awayTimeouts.textContent = data.awayTimeouts ?? 0;
+
+  // Compute and display clocks from server timestamps
+  const gameSeconds = computeGameClock(data);
+  const shotSeconds = computeShotClock(data);
+  elements.gameClock.textContent = formatTime(gameSeconds);
+  updateShotClockDisplay(shotSeconds);
 
   // Update game states
   updateLeadingTeam(data.homeScore, data.awayScore);
   updatePossession(data.possession);
-  updateFouls(data.homeFouls, data.awayFouls);
-  updateShotClock(data.shotClock);
-  updateGameStatus(data.status || "paused");
+  updateFouls(data.homeFouls ?? 0, data.awayFouls ?? 0);
+  updateGameStatus(data);
+
+  // Start or stop live ticking
+  if (data.clockRunning || data.shotClockRunning) {
+    startLiveClocks();
+  } else {
+    stopLiveClocks();
+  }
 
   // Store current data for next comparison
   previousData = {
     homeScore: data.homeScore,
     awayScore: data.awayScore,
-    shotClock: data.shotClock,
+    shotClock: shotSeconds,
     possession: data.possession,
-    status: data.status,
+    clockRunning: data.clockRunning,
   };
 });
 
@@ -246,29 +286,19 @@ onValue(scoreboardRef, (snapshot) => {
 // ========================================
 
 function initTheme() {
-  // Check for saved theme preference or default to dark
   const savedTheme = localStorage.getItem("scoreboard-theme") || "dark";
-  // Remove any existing theme classes
   document.body.classList.remove("theme-dark", "theme-light");
-  // Add the correct theme class
   document.body.classList.add(`theme-${savedTheme}`);
 }
 
 function toggleTheme() {
-  const currentTheme = document.body.classList.contains("theme-dark")
-    ? "dark"
-    : "light";
+  const currentTheme = document.body.classList.contains("theme-dark") ? "dark" : "light";
   const newTheme = currentTheme === "dark" ? "light" : "dark";
 
-  // Remove old theme and add new theme
   document.body.classList.remove("theme-dark", "theme-light");
   document.body.classList.add(`theme-${newTheme}`);
 
-  // Game state classes (running/paused) are already on body, no need to re-add
-
   localStorage.setItem("scoreboard-theme", newTheme);
-
-  // Trigger animation on theme button
   triggerAnimation(elements.themeToggle, "theme-change", 300);
 }
 
@@ -278,7 +308,6 @@ function toggleTheme() {
 
 elements.themeToggle?.addEventListener("click", toggleTheme);
 
-// Keyboard shortcut for theme toggle (T key)
 document.addEventListener("keydown", (e) => {
   if (e.key === "t" || e.key === "T") {
     toggleTheme();
@@ -291,7 +320,7 @@ document.addEventListener("keydown", (e) => {
 
 initTheme();
 
-// Add CSS for theme change animation
+// Add CSS for animations
 const style = document.createElement("style");
 style.textContent = `
   .theme-toggle.theme-change {
