@@ -18,8 +18,17 @@
 
   /* Status Colors */
   --color-live: #00ff88;
+  --color-live-glow: rgba(0, 255, 136, 0.45);
   --color-paused: #ff3b5c;
+  --color-paused-glow: rgba(255, 59, 92, 0.45);
+  --color-ended: #a78bfa;
+  --color-ended-glow: rgba(167, 139, 250, 0.45);
+  --color-offline: #6b7280;
+  --color-offline-glow: rgba(107, 114, 128, 0.3);
   --color-warning: #ffc107;
+  /* Dynamic status color token — switches with body class */
+  --color-status: var(--color-paused);
+  --color-status-glow: var(--color-paused-glow);
 
   /* Possession */
   --possession-color: #00d9ff;
@@ -47,6 +56,26 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+/* ========================================
+   STATUS COLOR TOKENS
+   body class drives --color-status everywhere
+   ======================================== */
+
+body.running {
+  --color-status: var(--color-live);
+  --color-status-glow: var(--color-live-glow);
+}
+
+body.paused {
+  --color-status: var(--color-paused);
+  --color-status-glow: var(--color-paused-glow);
+}
+
+body.game-ended {
+  --color-status: var(--color-ended);
+  --color-status-glow: var(--color-ended-glow);
 }
 
 /* ========================================
@@ -433,6 +462,15 @@ body::before {
   box-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+body.running .center-section,
+body.paused .center-section,
+body.game-ended .center-section {
+  border-color: color-mix(in srgb, var(--color-status) 25%, transparent);
+  box-shadow: var(--shadow-lg), 0 0 32px color-mix(in srgb, var(--color-status) 18%, transparent);
 }
 
 .center-section::before {
@@ -447,6 +485,26 @@ body::before {
       transparent 70%);
   opacity: 0.3;
   pointer-events: none;
+}
+
+/* Status accent bar at top of center panel */
+.center-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-status), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease, background 0.4s ease;
+  border-radius: 0 0 4px 4px;
+}
+
+body.running .center-section::after,
+body.paused .center-section::after,
+body.game-ended .center-section::after {
+  opacity: 1;
 }
 
 .center-section>* {
@@ -522,27 +580,30 @@ body.running .center-section.is-overtime .clock-display {
   transition: all 0.3s ease;
 }
 
-/* Clock States */
+/* Clock States — color driven by --color-status token */
+body.paused .clock-display,
+body.running .clock-display,
+body.game-ended .clock-display {
+  color: var(--color-status);
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+
 body.paused .clock-display {
-  color: var(--color-paused);
   animation: clockPulse 1.5s ease-in-out infinite;
 }
 
-body.running .clock-display {
-  color: var(--color-live);
+body.game-ended .clock-display {
+  opacity: 0.5;
 }
 
 @keyframes clockPulse {
-
-  0%,
-  100% {
+  0%, 100% {
     opacity: 1;
-    text-shadow: 0 0 20px rgba(255, 59, 92, 0.6);
+    text-shadow: 0 0 20px var(--color-status-glow);
   }
-
   50% {
     opacity: 0.7;
-    text-shadow: 0 0 40px rgba(255, 59, 92, 0.8);
+    text-shadow: 0 0 40px var(--color-status-glow);
   }
 }
 
@@ -629,13 +690,13 @@ body.running .clock-display {
   transition: all 0.3s ease;
 }
 
-body.running .status-display {
-  color: var(--color-live);
-  background: rgba(0, 255, 136, 0.1);
-}
-
-body.paused .status-display {
-  color: var(--color-paused);
+body.running .status-display,
+body.paused .status-display,
+body.game-ended .status-display {
+  color: var(--color-status);
+  background: color-mix(in srgb, var(--color-status) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-status) 30%, transparent);
+  transition: color 0.4s ease, background 0.4s ease, border-color 0.4s ease;
 }
 
 /* ========================================
@@ -658,7 +719,10 @@ body.paused .status-display {
   transition: opacity 0.3s ease;
 }
 
-body.running .live-indicator {
+/* Show indicator for all game states */
+body.running .live-indicator,
+body.paused .live-indicator,
+body.game-ended .live-indicator {
   opacity: 1;
 }
 
@@ -666,21 +730,27 @@ body.running .live-indicator {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--color-live);
+  background: var(--color-status);
+  box-shadow: 0 0 0 0 var(--color-status);
   animation: livePulse 2s ease-in-out infinite;
+  transition: background 0.4s ease;
+}
+
+/* Only pulse when running */
+body.paused .live-dot,
+body.game-ended .live-dot {
+  animation: none;
+  opacity: 0.8;
 }
 
 @keyframes livePulse {
-
-  0%,
-  100% {
+  0%, 100% {
     opacity: 1;
-    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+    box-shadow: 0 0 0 0 var(--color-status-glow);
   }
-
   50% {
     opacity: 0.8;
-    box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
+    box-shadow: 0 0 0 8px transparent;
   }
 }
 
@@ -688,19 +758,20 @@ body.running .live-indicator {
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 2px;
-  color: var(--color-live);
+  color: var(--color-status);
   text-transform: uppercase;
+  transition: color 0.4s ease;
 }
 
-/* Disconnected State */
+/* Disconnected State — overrides all */
 .live-indicator.disconnected .live-dot {
-  background: #888;
+  background: var(--color-offline);
   animation: none;
   box-shadow: none;
 }
 
 .live-indicator.disconnected .live-text {
-  color: #888;
+  color: var(--color-offline);
 }
 
 /* ========================================
