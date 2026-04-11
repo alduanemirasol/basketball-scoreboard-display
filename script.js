@@ -84,13 +84,14 @@ function getAudioContext() {
   return audioCtx;
 }
 
-function playBuzzer() {
+function playBuzzer(buzzerDuration = 1) {
   try {
     const ctx = getAudioContext();
+    const d = Math.max(0.3, buzzerDuration); // respect Firebase buzzerDuration
     const layers = [
-      { freq: 80,  gain: 0.5,  type: "sawtooth", duration: 1.8 },
-      { freq: 220, gain: 0.3,  type: "square",   duration: 1.5 },
-      { freq: 440, gain: 0.15, type: "sawtooth", duration: 1.2 },
+      { freq: 80, gain: 0.5, type: "sawtooth", duration: d },
+      { freq: 220, gain: 0.3, type: "square", duration: d * 0.85 },
+      { freq: 440, gain: 0.15, type: "sawtooth", duration: d * 0.7 },
     ];
     layers.forEach(({ freq, gain, type, duration }) => {
       const osc = ctx.createOscillator();
@@ -353,8 +354,9 @@ onValue(scoreboardRef, (snapshot) => {
 
   // Buzzer rising-edge detection
   if (data.buzzer === true && previousData.buzzer !== true) {
-    playBuzzer();
-    triggerAnimation(elements.gameClock, "buzzer-flash", 1800);
+    playBuzzer(data.buzzerDuration ?? 1);
+    const flashDuration = (data.buzzerDuration ?? 1) * 1000 + 800;
+    triggerAnimation(elements.gameClock, "buzzer-flash", flashDuration);
   }
 
   handleScoreChange(data.homeScore ?? 0, data.awayScore ?? 0);
